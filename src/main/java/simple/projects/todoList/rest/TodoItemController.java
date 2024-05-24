@@ -3,8 +3,8 @@ package simple.projects.todoList.rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import simple.projects.todoList.entity.Priority;
 import simple.projects.todoList.entity.TodoItem;
 import simple.projects.todoList.exceptions.ItemNotFoundException;
@@ -87,5 +87,13 @@ public class TodoItemController {
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS").format(new java.util.Date());
         TodoItemErrorResponse errorResponse = new TodoItemErrorResponse(HttpStatus.NOT_FOUND,exc.getMessage(),timeStamp);
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<TodoItemErrorResponse> handleWrongParameter(HttpMessageNotReadableException exc){
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS").format(new java.util.Date());
+        String message = "Parameter does not match expected type.";
+        TodoItemErrorResponse errorResponse = new TodoItemErrorResponse(HttpStatus.BAD_REQUEST,message,timeStamp);
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
 }
