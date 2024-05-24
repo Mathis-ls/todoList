@@ -3,7 +3,7 @@
 The App has a connection to a mysql Instance using docker and 
 provides a Rest Api for working with todo list items.
 
-### Start the application
+### <span style="color:#FF6347">Start the application</span>
 You will need **Docker** running on your machine. \
 The startup script is written for **zsh**.
 
@@ -13,7 +13,7 @@ Execute **./startUp.sh** and choose your:
 - password 
 - root-password
 
-### Use the application
+### <span style="color:#1E90FF">Use the application</span>
 
 All Requestbodies are of type: application/json.\
 The server runs on port 8080 -> all requests begin with **ip-address:8080** or localhost:8080.
@@ -41,3 +41,38 @@ Requestbody:
 example:
 **GET** /todoitems/**1**\
 will return the todo item with the id of 1.
+
+###### Change the priority of a existing todo item
+**PATCH** /todoitems/**{id}**\
+Requestbody:\
+{\
+"priority": "HIGH"\
+}
+
+###### Change the content of a existing todo item
+**PATCH** /todoitems/**{id}**\
+Requestbody:\
+{\
+"content":"finish another project"
+}
+
+##### Patch multiple fields
+It is possible to update multiple fields.\
+As of now there are only 2 fields though.
+
+**PATCH** /todoitems/**{id}**\
+Requestbody:\
+{\
+"priority": "HIGH",\
+"content":"finish another project"\
+}
+
+###### Update an existing todo item
+**PUT** /todoitems/**{id}**\
+{\
+"priority": "HIGH",\
+"content":"finish another project"\
+}
+
+###### Delete an existing todo item
+**DELETE** /todoitems/**{id}**
