@@ -27,6 +27,6 @@ docker run -d -p 3306:3306 --name todoItemsMySqlDB \
   -e MYSQL_DATABASE=${MYSQL_DATABASE} \
    mysql:8.4.0
 
-sleep 10
+sleep 6
 
 mvn spring-boot:run
