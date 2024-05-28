@@ -1,0 +1,35 @@
+services:
+    todoitemsdb:
+        image: mysql:8.4.0
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_TCP_PORT=${MYSQL_PORT}
+        restart: on-failure:10
+        networks:
+            - todoitemsnetwork
+#just for testing:
+        ports:
+            - 3306:${MYSQL_PORT}
+    todoitemsapp:
+        build: .
+        depends_on:
+            -   todoitemsdb
+        restart: on-failure:10
+        ports:
+            - 8080:8080
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_HOST=todoitemsdb
+            - MYSQL_PORT=${MYSQL_PORT}
+        networks:
+            - todoitemsnetwork
+
+networks:
+    todoitemsnetwork:
+        driver: bridge
+        name: todoitemsnetwork
