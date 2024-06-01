@@ -5,13 +5,10 @@ provides a Rest Api for working with todo list items.
 
 ### <span style="color:#FF6347">Start the application</span>
 You will need **Docker** running on your machine. \
-The startup script is written for **zsh**.
-
-Execute **./startUp.sh** and choose your:
-- DB-name
-- username 
-- password 
-- root-password
+1. Change into the projects root directory.
+2. Execute the setup.sh script. It is written for **zsh**. 
+   If it does not work just set the values inside the **.env file** manually.
+2. Execute: docker compose up. 
 
 ### <span style="color:#1E90FF">Use the application</span>
 
