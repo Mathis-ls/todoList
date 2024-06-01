@@ -2,6 +2,8 @@ package simple.projects.todoList.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name="todo_item")
 public class TodoItem {
@@ -43,5 +45,18 @@ public class TodoItem {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TodoItem todoItem = (TodoItem) o;
+        return id == todoItem.id && Objects.equals(content, todoItem.content) && priority == todoItem.priority;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, content, priority);
     }
 }
