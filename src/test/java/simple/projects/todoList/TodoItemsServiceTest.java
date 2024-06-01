@@ -67,6 +67,35 @@ public class TodoItemsServiceTest {
     }
 
     @Test
+    void updateTodoItemTest() {
+        // Create and save a new TodoItem
+        TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
+        int id = todoItemService.save(todoItem);
+
+        // Modify the priority of the saved item
+        Priority updatePriority = Priority.HIGH;
+        TodoItem updatedTodoItem = todoItemService.updatePriority(id, updatePriority);
+        TodoItem foundUpdatedTodoItem = todoItemService.findById(id);
+        assertNotNull(foundUpdatedTodoItem);
+        assertEquals(updatedTodoItem,foundUpdatedTodoItem);
+
+        // Modify the content of the saved item
+        String updateContent = "Updated Content";
+        updatedTodoItem = todoItemService.updateContent(id, updateContent);
+        foundUpdatedTodoItem = todoItemService.findById(id);
+        assertNotNull(foundUpdatedTodoItem);
+        assertEquals(updatedTodoItem,foundUpdatedTodoItem);
+
+        // Modify both the priority and content of the saved item
+        TodoItem updateItem = new TodoItem("Final Content", Priority.LOW);
+        updatedTodoItem = todoItemService.update(id,updateItem);
+        foundUpdatedTodoItem = todoItemService.findById(id);
+        assertNotNull(foundUpdatedTodoItem);
+        assertEquals(updatedTodoItem,foundUpdatedTodoItem);
+    }
+
+
+    @Test
     void deleteByIdTest() {
         TodoItem todoItem = new TodoItem("Learn TestContainers", Priority.HIGH);
         int id = todoItemService.save(todoItem);
