@@ -44,34 +44,31 @@ public class TodoItemController {
     }
 
     @PutMapping("/{id}")
-    public TodoItem updateTodoItem(@PathVariable int id, @RequestBody TodoItem updateTodoItem){
-        TodoItem foundItem = todoItemService.findById(id);
-        if(foundItem == null) throw new ItemNotFoundException("Todo item with id: " + id + " could not be found.");
+    public TodoItem updateTodoItem(@PathVariable int id, @RequestBody TodoItem update){
+        TodoItem updatedTodoItem = todoItemService.update(id,update);
+        if(updatedTodoItem == null) throw new ItemNotFoundException("Todo item with id: " + id + " could not be found.");
 
-        foundItem.setPriority(updateTodoItem.getPriority());
-        foundItem.setContent(updateTodoItem.getContent());
-
-        todoItemService.save(foundItem);
-        return foundItem;
+        return updatedTodoItem;
     }
 
     @PatchMapping("/{id}")
     public TodoItem updateTodoItemFields(@PathVariable int id, @RequestBody Map<String, Object> updates){
-        TodoItem foundItem = todoItemService.findById(id);
-        if(foundItem == null) throw new ItemNotFoundException("Todo item with id: " + id + " could not be found.");
+        TodoItem updatedItem = todoItemService.findById(id);
+        if(null == updatedItem) throw new ItemNotFoundException("Todo item with id: " + id + " could not be found.");
+
+        if(!updates.containsKey("content") && !updates.containsKey("priority")) throw new IllegalArgumentException("Todo item with id: " + id + " could not be patched because no valid key values could be detected in: " + updates);
 
         if (updates.containsKey("content")) {
             String newContent = (String) updates.get("content");
-            foundItem.setContent(newContent);
+            updatedItem = todoItemService.updateContent(id,newContent);
         }
 
         if (updates.containsKey("priority")) {
-            String newPriority = (String) updates.get("priority");
-            foundItem.setPriority(Priority.valueOf(newPriority.toUpperCase()));
+            Priority newPriority = Priority.valueOf(((String)updates.get("priority")).toUpperCase());
+            updatedItem = todoItemService.updatePriority(id,newPriority);
         }
 
-        todoItemService.save(foundItem);
-        return foundItem;
+        return updatedItem;
     }
 
     @DeleteMapping("/{id}")
@@ -90,7 +87,22 @@ public class TodoItemController {
     }
 
     @ExceptionHandler
+    public ResponseEntity<TodoItemErrorResponse> handleWrongParameter(IllegalArgumentException exc) {
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS").format(new java.util.Date());
+        TodoItemErrorResponse errorResponse = new TodoItemErrorResponse(HttpStatus.BAD_REQUEST, exc.getMessage(), timeStamp);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<TodoItemErrorResponse> handleWrongParameter(HttpMessageNotReadableException exc){
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS").format(new java.util.Date());
+        String message = "Parameter does not match expected type.";
+        TodoItemErrorResponse errorResponse = new TodoItemErrorResponse(HttpStatus.BAD_REQUEST,message,timeStamp);
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<TodoItemErrorResponse> handleWrongParameter(ClassCastException exc){
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS").format(new java.util.Date());
         String message = "Parameter does not match expected type.";
         TodoItemErrorResponse errorResponse = new TodoItemErrorResponse(HttpStatus.BAD_REQUEST,message,timeStamp);
