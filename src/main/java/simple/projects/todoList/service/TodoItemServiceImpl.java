@@ -40,12 +40,32 @@ public class TodoItemServiceImpl implements TodoItemService{
 
     @Override
     @Transactional
-    public TodoItem changePriority(int id, Priority priority) {
+    public TodoItem updatePriority(int id, Priority priority) {
        TodoItem foundTodoItem = this.findById(id);
        if(foundTodoItem == null) return null;
        foundTodoItem.setPriority(priority);
        return foundTodoItem;
     }
+
+    @Override
+    @Transactional
+    public TodoItem updateContent(int id, String content) {
+        TodoItem foundTodoItem = this.findById(id);
+        if(foundTodoItem == null) return null;
+        foundTodoItem.setContent(content);
+        return foundTodoItem;
+    }
+
+    @Override
+    @Transactional
+    public TodoItem update(int id, TodoItem todoItem) {
+        TodoItem foundTodoItem = this.findById(id);
+        if(foundTodoItem == null) return null;
+        foundTodoItem.setContent(todoItem.getContent());
+        foundTodoItem.setPriority(todoItem.getPriority());
+        return foundTodoItem;
+    }
+
 
     @Override
     @Transactional

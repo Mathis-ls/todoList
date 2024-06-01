@@ -12,7 +12,14 @@ public interface TodoItemService {
     List<TodoItem> findAll();
     int save(TodoItem todoItem);
 
-    TodoItem changePriority(int id, Priority priority);
+    TodoItem updatePriority(int id, Priority priority);
+
+    TodoItem updateContent(int id, String content);
+
+    TodoItem update(int id, TodoItem todoItem);
+
+
+
 
     TodoItem deleteById(int id);
 
