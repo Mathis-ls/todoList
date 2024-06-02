@@ -10,6 +10,8 @@ services:
         restart: on-failure:10
         networks:
             - todoitemsnetwork
+        volumes:
+            - todoItem-db-data:/var/lib/mysql
 #just for testing:
         ports:
             - 3306:${MYSQL_PORT}
@@ -33,3 +35,6 @@ networks:
     todoitemsnetwork:
         driver: bridge
         name: todoitemsnetwork
+
+volumes:
+    todoItem-db-data:
