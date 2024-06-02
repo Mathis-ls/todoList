@@ -22,7 +22,8 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public class TodoItemsServiceTest {
-    private static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.4.0");
+    private static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.4.0")
+            .withInitScript("schema.sql");
 
     @BeforeAll
     static void beforeAll(){
