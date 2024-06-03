@@ -65,7 +65,9 @@ public class TodoItemControllerTest {
 
     @Test
     void testGetTodoItem() {
-        TodoItem todoItem = new TodoItem("Learn TestContainers", Priority.HIGH);
+        String content = "Learn TestContainers";
+        Priority priority = Priority.HIGH;
+        TodoItem todoItem = new TodoItem(content, priority);
         int id = todoItemService.save(todoItem);
 
         given()
@@ -74,14 +76,20 @@ public class TodoItemControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", equalTo(id))
-                .body("content", equalTo("Learn TestContainers"))
-                .body("priority", equalTo(Priority.HIGH.toString()));
+                .body("content", equalTo(content))
+                .body("priority", equalTo(priority.toString()));
     }
 
     @Test
     void testGetTodoItems() {
-        TodoItem todoItem1 = new TodoItem("Learn TestContainers", Priority.HIGH);
-        TodoItem todoItem2 = new TodoItem("Implement Tests", Priority.MEDIUM);
+        String content1 = "Learn TestContainers";
+        Priority priority1 = Priority.HIGH;
+        TodoItem todoItem1 = new TodoItem(content1, priority1);
+
+        String content2 = "Implement Tests";
+        Priority priority2 = Priority.MEDIUM;
+        TodoItem todoItem2 = new TodoItem(content2, priority2);
+
         int id1 = todoItemService.save(todoItem1);
         int id2 = todoItemService.save(todoItem2);
 
@@ -91,15 +99,17 @@ public class TodoItemControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(2))
-                .body("find { it.id == " + id1 + " }.content", equalTo("Learn TestContainers"))
-                .body("find { it.id == " + id1 + " }.priority", equalTo("HIGH"))
-                .body("find { it.id == " + id2 + " }.content", equalTo("Implement Tests"))
-                .body("find { it.id == " + id2 + " }.priority", equalTo("MEDIUM"));
+                .body("find { it.id == " + id1 + " }.content", equalTo(content1))
+                .body("find { it.id == " + id1 + " }.priority", equalTo(priority1.toString()))
+                .body("find { it.id == " + id2 + " }.content", equalTo(content2))
+                .body("find { it.id == " + id2 + " }.priority", equalTo(priority2.toString()));
     }
 
     @Test
     void testSaveTodoItem() {
-        TodoItem todoItem = new TodoItem("Learn TestContainers", Priority.HIGH);
+        String content = "Learn TestContainers";
+        Priority priority = Priority.HIGH;
+        TodoItem todoItem = new TodoItem(content, priority);
 
         // Send POST request to save the todoItem
         Integer savedItemId = given()
@@ -117,8 +127,8 @@ public class TodoItemControllerTest {
 
         TodoItem savedTodoItem = todoItemService.findById(savedItemId);
         assertNotNull(savedTodoItem);
-        assertEquals(todoItem.getContent(), savedTodoItem.getContent());
-        assertEquals(todoItem.getPriority(), savedTodoItem.getPriority());
+        assertEquals(content, savedTodoItem.getContent());
+        assertEquals(priority, savedTodoItem.getPriority());
     }
 
     @Test
@@ -126,7 +136,9 @@ public class TodoItemControllerTest {
         TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
         int id = todoItemService.save(todoItem);
 
-        TodoItem updatedTodoItem = new TodoItem("Updated Content", Priority.HIGH);
+        String updatedContent = "Updated Content";
+        Priority updatedPriority = Priority.HIGH;
+        TodoItem updatedTodoItem = new TodoItem(updatedContent, updatedPriority);
 
         given()
                 .contentType(ContentType.JSON)
@@ -136,41 +148,48 @@ public class TodoItemControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", equalTo(id))
-                .body("content", equalTo("Updated Content"))
-                .body("priority", equalTo(Priority.HIGH.toString()));
+                .body("content", equalTo(updatedContent))
+                .body("priority", equalTo(updatedPriority.toString()));
     }
 
     @Test
     void testUpdateTodoItemFields() {
-        TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
+        Priority originalPriority = Priority.MEDIUM;
+        TodoItem todoItem = new TodoItem("Original Content", originalPriority);
         int id = todoItemService.save(todoItem);
 
-        given()
-                .contentType(ContentType.JSON)
-                .body(Map.of("content", "Partially Updated Content"))
-                .when()
-                .patch("/todoitems/{id}", id)
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body("id", equalTo(id))
-                .body("content", equalTo("Partially Updated Content"))
-                .body("priority", equalTo(Priority.MEDIUM.toString()));
+        String updatedContent = "Updated Content";
 
         given()
                 .contentType(ContentType.JSON)
-                .body(Map.of("priority", "LOW"))
+                .body(Map.of("content", updatedContent))
                 .when()
                 .patch("/todoitems/{id}", id)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", equalTo(id))
-                .body("content", equalTo("Partially Updated Content"))
-                .body("priority", equalTo(Priority.LOW.toString()));
+                .body("content", equalTo(updatedContent))
+                .body("priority", equalTo(originalPriority.toString()));
+
+        Priority updatedPriority = Priority.LOW;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(Map.of("priority", updatedPriority))
+                .when()
+                .patch("/todoitems/{id}", id)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("id", equalTo(id))
+                .body("content", equalTo(updatedContent))
+                .body("priority", equalTo(updatedPriority.toString()));
     }
 
     @Test
     void testDeleteTodoItem() {
-        TodoItem todoItem = new TodoItem("Learn TestContainers", Priority.HIGH);
+        String content = "Learn TestContainers";
+        Priority priority = Priority.HIGH;
+        TodoItem todoItem = new TodoItem(content, priority);
         int id = todoItemService.save(todoItem);
 
         given()
@@ -179,8 +198,8 @@ public class TodoItemControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", equalTo(id))
-                .body("content", equalTo("Learn TestContainers"))
-                .body("priority", equalTo(Priority.HIGH.toString()));
+                .body("content", equalTo(content))
+                .body("priority", equalTo(priority.toString()));
 
         given()
                 .when()
