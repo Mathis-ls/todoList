@@ -55,7 +55,9 @@ public class TodoItemsServiceTest {
 
     @Test
     void addTodoItemTest(){
-        TodoItem todoItem = new TodoItem("Learn TestContainers",Priority.HIGH);
+        String content = "Learn TestContainers";
+        Priority priority = Priority.HIGH;
+        TodoItem todoItem = new TodoItem(content,priority);
         int id = todoItemService.save(todoItem);
 
         assertEquals(1, todoItemService.findAll().size());
@@ -63,13 +65,12 @@ public class TodoItemsServiceTest {
         TodoItem foundTodoItem = todoItemService.findById(id);
         if(foundTodoItem == null) fail();
         assertEquals(id,foundTodoItem.getId());
-        assertEquals("Learn TestContainers",foundTodoItem.getContent());
-        assertEquals(Priority.HIGH,foundTodoItem.getPriority());
+        assertEquals(content,foundTodoItem.getContent());
+        assertEquals(priority,foundTodoItem.getPriority());
     }
 
     @Test
     void updateTodoItemTest() {
-        // Create and save a new TodoItem
         TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
         int id = todoItemService.save(todoItem);
 
