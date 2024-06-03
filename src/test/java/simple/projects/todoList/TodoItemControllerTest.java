@@ -207,4 +207,92 @@ public class TodoItemControllerTest {
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value());
     }
+
+    //Error Tests:
+
+    @Test
+    void testGetTodoItemNotFound() {
+        int invalidId = 0;
+
+        given()
+                .when()
+                .get("/todoitems/{id}", invalidId)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("message", equalTo("Todo item with id: " + invalidId + " could not be found."));
+    }
+    @Test
+    void testPutTodoItemNotFound() {
+        int invalidId = 0;
+        TodoItem updatedTodoItem = new TodoItem("Updated Content", Priority.HIGH);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(updatedTodoItem)
+                .when()
+                .put("/todoitems/{id}", invalidId)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("message", equalTo("Todo item with id: " + invalidId + " could not be found."));
+    }
+
+    @Test
+    void testPatchTodoItemNotFound() {
+        int invalidId = 0;
+        Map<String, Object> updates = Map.of("content", "Updated Content");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(updates)
+                .when()
+                .patch("/todoitems/{id}", invalidId)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("message", equalTo("Todo item with id: " + invalidId + " could not be found."));
+    }
+
+    @Test
+    void testDeleteTodoItemNotFound() {
+        int invalidId = 0;
+
+        given()
+                .when()
+                .delete("/todoitems/{id}", invalidId)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("message", equalTo("Todo item with id: " + invalidId + " could not be found."));
+    }
+    @Test
+    void testPatchTodoItemWithInvalidKey() {
+        TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
+        int id = todoItemService.save(todoItem);
+
+        Map<String, Object> updates = Map.of("invalidKey", "value");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(updates)
+                .when()
+                .patch("/todoitems/{id}", id)
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", equalTo("Todo item with id: " + id + " could not be patched because no valid key values could be detected in: " + updates));
+    }
+
+    @Test
+    void testPatchTodoItemWithWrongValueType() {
+        TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
+        int id = todoItemService.save(todoItem);
+
+        Map<String, Object> updates = Map.of("priority", false); // Invalid type, should be a string or integer
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(updates)
+                .when()
+                .patch("/todoitems/{id}", id)
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", equalTo("Parameter does not match expected type."));
+    }
 }
