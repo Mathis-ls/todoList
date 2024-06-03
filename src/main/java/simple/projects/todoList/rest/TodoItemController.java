@@ -40,6 +40,9 @@ public class TodoItemController {
 
     @PostMapping
     public int saveTodoItem(@RequestBody TodoItem todoItem){
+        if (todoItem.getContent() == null || todoItem.getPriority() == null) {
+            throw new IllegalArgumentException("Content and priority must not be null.");
+        }
         return todoItemService.save(todoItem);
     }
 
@@ -108,4 +111,14 @@ public class TodoItemController {
         TodoItemErrorResponse errorResponse = new TodoItemErrorResponse(HttpStatus.BAD_REQUEST,message,timeStamp);
         return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
+
+    /*
+    @ExceptionHandler
+    public ResponseEntity<TodoItemErrorResponse> handleMissingKey(java.sql.SQLIntegrityConstraintViolationException exc){
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS").format(new java.util.Date());
+        String message = "JSON does not contain needed fields.";
+        TodoItemErrorResponse errorResponse = new TodoItemErrorResponse(HttpStatus.BAD_REQUEST,message,timeStamp);
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+    }
+     */
 }

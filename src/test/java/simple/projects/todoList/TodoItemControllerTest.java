@@ -221,6 +221,52 @@ public class TodoItemControllerTest {
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .body("message", equalTo("Todo item with id: " + invalidId + " could not be found."));
     }
+
+
+    @Test
+    void testPostTodoItemMissingPriority() {
+        TodoItem todoItem = new TodoItem();
+        todoItem.setContent("Content without priority");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(todoItem)
+                .when()
+                .post("/todoitems")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", equalTo("Content and priority must not be null."));
+    }
+
+    @Test
+    void testPostTodoItemMissingContent() {
+        TodoItem todoItem = new TodoItem();
+        todoItem.setPriority(Priority.HIGH);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(todoItem)
+                .when()
+                .post("/todoitems")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", equalTo("Content and priority must not be null."));
+    }
+
+    @Test
+    void testPostTodoItemMissingContentAndPriority() {
+        TodoItem todoItem = new TodoItem();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(todoItem)
+                .when()
+                .post("/todoitems")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", equalTo("Content and priority must not be null."));
+    }
+
     @Test
     void testPutTodoItemNotFound() {
         int invalidId = 0;
