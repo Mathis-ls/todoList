@@ -40,6 +40,9 @@ public class TodoItemController {
 
     @PostMapping
     public int saveTodoItem(@RequestBody TodoItem todoItem){
+        //remove possible other values like id
+        todoItem = new TodoItem(todoItem.getContent(),todoItem.getPriority());
+
         if (todoItem.getContent() == null || todoItem.getPriority() == null) {
             throw new IllegalArgumentException("Content and priority must not be null.");
         }
