@@ -21,8 +21,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -265,6 +264,82 @@ public class TodoItemControllerTest {
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .body("message", equalTo("Content and priority must not be null."));
+    }
+
+    @Test
+    void testPostTodoItemWithId() {
+        String content = "Learn TestContainers";
+        Priority priority = Priority.HIGH;
+        TodoItem todoItem = new TodoItem(content,priority);
+        //Save item in DB so a id will be set
+        int sentId = todoItemService.save(todoItem);
+
+        Integer savedItemId = given()
+                .contentType(ContentType.JSON)
+                .body(todoItem)
+                .when()
+                .post("/todoitems")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .response()
+                .as(Integer.class);
+        //Id that was used in the json and the id that was given to the todoItem as it was saved
+        //should be different
+        assertNotEquals(savedItemId,sentId);
+
+        //both todoItems exist int the db under different ids
+        given()
+                .when()
+                .get("/todoitems/{id}", savedItemId)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("id", equalTo(savedItemId))
+                .body("content", equalTo(content))
+                .body("priority", equalTo(priority.toString()));
+
+        given()
+                .when()
+                .get("/todoitems/{id}", sentId)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("id", equalTo(sentId))
+                .body("content", equalTo(content))
+                .body("priority", equalTo(priority.toString()));
+    }
+
+    @Test
+    void testPostTodoItemWithExtraData() {
+        String content = "Learn TestContainers";
+        Priority priority = Priority.HIGH;
+
+        // Create a map representing the JSON with extra random data
+        Map<String, Object> todoItemWithExtraData = Map.of(
+                "content", content,
+                "priority", priority.toString(),
+                "extraField1", "extraValue1",
+                "extraField2", 12345,
+                "extraField3", true
+        );
+
+        // Send POST request to save the todoItem
+        Integer savedItemId = given()
+                .contentType(ContentType.JSON)
+                .body(todoItemWithExtraData)
+                .when()
+                .post("/todoitems")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .response()
+                .as(Integer.class);
+
+        assertNotNull(savedItemId);
+
+        TodoItem savedTodoItem = todoItemService.findById(savedItemId);
+        assertNotNull(savedTodoItem);
+        assertEquals(content, savedTodoItem.getContent());
+        assertEquals(priority, savedTodoItem.getPriority());
     }
 
     @Test
