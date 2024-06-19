@@ -33,9 +33,9 @@ public class TodoItemServiceImpl implements TodoItemService{
 
     @Override
     @Transactional
-    public int save(TodoItem todoItem) {
+    public TodoItem save(TodoItem todoItem) {
         todoItemRepository.save(todoItem);
-        return todoItem.getId();
+        return todoItem;
     }
 
     @Override

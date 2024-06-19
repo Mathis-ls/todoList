@@ -10,7 +10,7 @@ public interface TodoItemService {
     TodoItem findById(int id);
 
     List<TodoItem> findAll();
-    int save(TodoItem todoItem);
+    TodoItem save(TodoItem todoItem);
 
     TodoItem updatePriority(int id, Priority priority);
 

@@ -39,7 +39,7 @@ public class TodoItemController {
     }
 
     @PostMapping
-    public int saveTodoItem(@RequestBody TodoItem todoItem){
+    public TodoItem saveTodoItem(@RequestBody TodoItem todoItem){
         //remove possible other values like id
         todoItem = new TodoItem(todoItem.getContent(),todoItem.getPriority());
 
