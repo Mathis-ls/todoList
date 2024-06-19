@@ -67,7 +67,7 @@ public class TodoItemControllerTest {
         String content = "Learn TestContainers";
         Priority priority = Priority.HIGH;
         TodoItem todoItem = new TodoItem(content, priority);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         given()
                 .when()
@@ -89,8 +89,8 @@ public class TodoItemControllerTest {
         Priority priority2 = Priority.MEDIUM;
         TodoItem todoItem2 = new TodoItem(content2, priority2);
 
-        int id1 = todoItemService.save(todoItem1);
-        int id2 = todoItemService.save(todoItem2);
+        int id1 = todoItemService.save(todoItem1).getId();
+        int id2 = todoItemService.save(todoItem2).getId();
 
         given()
                 .when()
@@ -111,7 +111,7 @@ public class TodoItemControllerTest {
         TodoItem todoItem = new TodoItem(content, priority);
 
         // Send POST request to save the todoItem
-        Integer savedItemId = given()
+        TodoItem returnedItem = given()
                 .contentType(ContentType.JSON)
                 .body(todoItem)
                 .when()
@@ -120,11 +120,15 @@ public class TodoItemControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .response()
-                .as(Integer.class);
+                .as(TodoItem.class);
 
-        assertNotNull(savedItemId);
+        //assert that the values of the returned Item match the ones sent to the endpoint
+        assertNotNull(returnedItem.getId());
+        assertEquals(content,returnedItem.getContent());
+        assertEquals(priority,returnedItem.getPriority());
 
-        TodoItem savedTodoItem = todoItemService.findById(savedItemId);
+        //assert that the item was saved in the db
+        TodoItem savedTodoItem = todoItemService.findById(returnedItem.getId());
         assertNotNull(savedTodoItem);
         assertEquals(content, savedTodoItem.getContent());
         assertEquals(priority, savedTodoItem.getPriority());
@@ -133,7 +137,7 @@ public class TodoItemControllerTest {
     @Test
     void testUpdateTodoItem() {
         TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         String updatedContent = "Updated Content";
         Priority updatedPriority = Priority.HIGH;
@@ -155,7 +159,7 @@ public class TodoItemControllerTest {
     void testUpdateTodoItemFields() {
         Priority originalPriority = Priority.MEDIUM;
         TodoItem todoItem = new TodoItem("Original Content", originalPriority);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         String updatedContent = "Updated Content";
 
@@ -189,7 +193,7 @@ public class TodoItemControllerTest {
         String content = "Learn TestContainers";
         Priority priority = Priority.HIGH;
         TodoItem todoItem = new TodoItem(content, priority);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         given()
                 .when()
@@ -272,7 +276,7 @@ public class TodoItemControllerTest {
         Priority priority = Priority.HIGH;
         TodoItem todoItem = new TodoItem(content,priority);
         //Save item in DB so a id will be set
-        int sentId = todoItemService.save(todoItem);
+        int sentId = todoItemService.save(todoItem).getId();
 
         Integer savedItemId = given()
                 .contentType(ContentType.JSON)
@@ -283,7 +287,8 @@ public class TodoItemControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .response()
-                .as(Integer.class);
+                .as(TodoItem.class)
+                .getId();
         //Id that was used in the json and the id that was given to the todoItem as it was saved
         //should be different
         assertNotEquals(savedItemId,sentId);
@@ -332,7 +337,8 @@ public class TodoItemControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .response()
-                .as(Integer.class);
+                .as(TodoItem.class)
+                .getId();
 
         assertNotNull(savedItemId);
 
@@ -386,7 +392,7 @@ public class TodoItemControllerTest {
     @Test
     void testPatchTodoItemWithInvalidKey() {
         TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         Map<String, Object> updates = Map.of("invalidKey", "value");
 
@@ -403,7 +409,7 @@ public class TodoItemControllerTest {
     @Test
     void testPatchTodoItemWithWrongValueType() {
         TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         Map<String, Object> updates = Map.of("priority", false); // Invalid type, should be a string or integer
 

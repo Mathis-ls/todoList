@@ -58,7 +58,7 @@ public class TodoItemsServiceTest {
         String content = "Learn TestContainers";
         Priority priority = Priority.HIGH;
         TodoItem todoItem = new TodoItem(content,priority);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         assertEquals(1, todoItemService.findAll().size());
 
@@ -72,7 +72,7 @@ public class TodoItemsServiceTest {
     @Test
     void updateTodoItemTest() {
         TodoItem todoItem = new TodoItem("Original Content", Priority.MEDIUM);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         // Modify the priority of the saved item
         Priority updatePriority = Priority.HIGH;
@@ -100,7 +100,7 @@ public class TodoItemsServiceTest {
     @Test
     void deleteByIdTest() {
         TodoItem todoItem = new TodoItem("Learn TestContainers", Priority.HIGH);
-        int id = todoItemService.save(todoItem);
+        int id = todoItemService.save(todoItem).getId();
 
         TodoItem deletedTodoItem = todoItemService.deleteById(id);
         //assert values of deleted Item:
@@ -118,8 +118,8 @@ public class TodoItemsServiceTest {
     void findAllTest() {
         TodoItem todoItem1 = new TodoItem("Learn TestContainers", Priority.HIGH);
         TodoItem todoItem2 = new TodoItem("Implement Tests", Priority.MEDIUM);
-        int id1 = todoItemService.save(todoItem1);
-        int id2 = todoItemService.save(todoItem2);
+        int id1 = todoItemService.save(todoItem1).getId();
+        int id2 = todoItemService.save(todoItem2).getId();
 
         List<TodoItem> todoItems = todoItemService.findAll();
 
